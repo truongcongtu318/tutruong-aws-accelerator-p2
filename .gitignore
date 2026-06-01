@@ -1,0 +1,55 @@
+# ===== Terraform =====
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfvars
+!example.tfvars
+
+# ===== Kubernetes =====
+kubeconfig
+*.kubeconfig
+
+# ===== Docker =====
+docker-compose.override.yml
+
+# ===== AWS =====
+.aws/
+*.pem
+*.key
+
+# ===== Secrets / Credentials =====
+.env
+.env.*
+!.env.example
+*.secret
+credentials
+credentials.*
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== Node (nếu dùng) =====
+node_modules/
+
+W8_phase2_announcement_cloud.md
