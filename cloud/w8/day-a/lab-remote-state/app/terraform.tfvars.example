@@ -1,0 +1,15 @@
+# AWS Region muốn deploy tài nguyên (phải trùng khớp với region của bootstrap)
+aws_region = "us-west-2"
+
+# Tiền tố tên tài nguyên (phải trùng khớp với region của bootstrap)
+prefix = "student"
+
+# Môi trường deploy
+environment = "dev"
+
+# Tên người sở hữu
+owner = "yourname"
+
+# Cấu hình EC2 Instance
+instance_name = "remote-state-app"
+instance_type = "t3.micro"

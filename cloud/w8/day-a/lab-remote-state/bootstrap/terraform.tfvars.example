@@ -1,0 +1,11 @@
+# AWS Region muốn deploy tài nguyên
+aws_region = "us-west-2"
+
+# Tiền tố tên tài nguyên (ví dụ: dùng tên của bạn hoặc viết tắt tên) để tránh trùng lặp
+prefix = "student"
+
+# Tên môi trường
+environment = "dev"
+
+# Tên người sở hữu tài nguyên
+owner = "yourname"

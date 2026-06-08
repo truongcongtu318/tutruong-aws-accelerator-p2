@@ -1,0 +1,23 @@
+variable "aws_region" {
+  description = "AWS region to deploy resources."
+  type        = string
+  default     = "us-west-2"
+}
+
+variable "prefix" {
+  description = "Prefix for naming resources to ensure uniqueness."
+  type        = string
+  default     = "student"
+}
+
+variable "environment" {
+  description = "Environment name (e.g. dev, staging, prod)."
+  type        = string
+  default     = "dev"
+}
+
+variable "owner" {
+  description = "Owner of the resources (e.g. your-name)."
+  type        = string
+  default     = "student"
+}

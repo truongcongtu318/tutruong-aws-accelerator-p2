@@ -1,0 +1,20 @@
+terraform {
+  required_version = ">= 1.5.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+
+  # Cấu hình Remote State lưu trên S3 và DynamoDB
+  # LƯU Ý: Học viên phải thay thế các giá trị bên dưới bằng kết quả output của phần bootstrap.
+  backend "s3" {
+    bucket         = "YOUR_BOOTSTRAP_S3_BUCKET_NAME" # Ví dụ: tfstate-student-dev-xxxx
+    key            = "w8-day-a/app/terraform.tfstate"
+    region         = "us-west-2"
+    dynamodb_table = "YOUR_BOOTSTRAP_DYNAMODB_TABLE_NAME" # Ví dụ: tfstate-locks-student-dev
+    encrypt        = true
+  }
+}
