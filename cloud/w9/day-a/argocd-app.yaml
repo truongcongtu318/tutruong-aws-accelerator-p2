@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: local-gitops-demo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/truongcongtu318/tutruong-aws-accelerator-p2.git'
+    targetRevision: main
+    path: cloud/w9/day-a/manifests
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: gitops-demo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
