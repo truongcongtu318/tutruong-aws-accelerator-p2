@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: web-config
@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 data:
-  message: {"Hello Xbrain"}
+  message: "Hello Xbrain"
 ---
 
 apiVersion: apps/v1
