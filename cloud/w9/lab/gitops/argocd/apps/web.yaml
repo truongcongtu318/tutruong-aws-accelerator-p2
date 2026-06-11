@@ -7,6 +7,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/truongcongtu318/tutruong-aws-accelerator-p2.git'
+    targetRevision: main
     path: 'cloud/w9/lab/gitops/k8s'
   destination:
     server: 'https://kubernetes.default.svc'
