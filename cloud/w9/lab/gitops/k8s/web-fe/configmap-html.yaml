@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-fe-html
+  namespace: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>GitOps Demo - FE + BE</title>
+      <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #0f172a; color: #e2e8f0; }
+        h1 { color: #f59e0b; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; margin: 16px 0; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 14px; font-weight: 700; background: #f59e0b; color: #0f172a; }
+        button { background: #3b82f6; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #2563eb; }
+        #result { margin-top: 16px; padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; white-space: pre-wrap; }
+      </style>
+    </head>
+    <body>
+      <h1>🚀 GitOps Demo</h1>
+      <div class="card">
+        <span class="badge">Frontend</span>
+        <p>This page is served by ArgoCD-managed nginx.</p>
+        <button onclick="callApi()">📡 Call Backend API</button>
+        <div id="result">Click the button to call backend...</div>
+      </div>
+      <div class="card">
+        <span class="badge" style="background: #22c55e;">Backend</span>
+        <p id="be-status">⏳ Waiting for backend...</p>
+      </div>
+      <script>
+        async function callApi() {
+          const el = document.getElementById('result');
+          el.textContent = '⏳ Calling /api/anything...';
+          try {
+            const res = await fetch('/api/anything');
+            const data = await res.json();
+            el.textContent = JSON.stringify(data, null, 2);
+            document.getElementById('be-status').textContent = '✅ Backend reachable!';
+          } catch (e) {
+            el.textContent = '❌ Error: ' + e.message;
+            document.getElementById('be-status').textContent = '❌ Backend unreachable';
+          }
+        }
+        // Auto-call on load
+        callApi();
+      </script>
+    </body>
+    </html>
