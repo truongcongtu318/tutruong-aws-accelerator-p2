@@ -1,0 +1,14 @@
+aws_region  = "ap-southeast-1"
+project_name = "lab-anhminh-monitoring"
+alert_email  = "your-email@example.com"
+
+# Free-tier friendly in many accounts/regions, but verify pricing in your AWS account.
+instance_type = "t3.micro"
+
+# Optional SSH. If you leave key_name = null, use SSM Session Manager instead.
+key_name         = null
+ssh_allowed_cidr = null
+
+# Example if you want SSH:
+# key_name         = "my-existing-keypair"
+# ssh_allowed_cidr = "1.2.3.4/32"
