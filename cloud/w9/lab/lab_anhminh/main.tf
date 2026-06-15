@@ -174,3 +174,121 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
 
   tags = local.tags
 }
+
+# ─────────────────────────────────────────────────────────────
+# Lab 3: CloudWatch Dashboard
+# ─────────────────────────────────────────────────────────────
+resource "aws_cloudwatch_dashboard" "main" {
+  dashboard_name = "${local.name}-dashboard"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      # ── CPU usage widget ──
+      {
+        type   = "metric"
+        x      = 0
+        y      = 0
+        width  = 12
+        height = 6
+        properties = {
+          title   = "EC2 CPU Utilization"
+          region  = var.aws_region
+          view    = "timeSeries"
+          stacked = false
+          period  = 300
+          stat    = "Average"
+          metrics = [
+            ["AWS/EC2", "CPUUtilization", "InstanceId", aws_instance.monitoring_lab.id]
+          ]
+          annotations = {
+            horizontal = [
+              {
+                label = "Alarm threshold (${var.cpu_alarm_threshold}%)"
+                value = var.cpu_alarm_threshold
+                color = "#d62728"
+                fill  = "above"
+              }
+            ]
+          }
+        }
+      },
+
+      # ── CPU from CWAgent namespace ──
+      {
+        type   = "metric"
+        x      = 12
+        y      = 0
+        width  = 12
+        height = 6
+        properties = {
+          title   = "CWAgent — CPU usage (idle, user, system, iowait)"
+          region  = var.aws_region
+          view    = "timeSeries"
+          stacked = false
+          period  = 300
+          stat    = "Average"
+          metrics = [
+            ["CWAgent", "cpu_usage_idle", "InstanceId", aws_instance.monitoring_lab.id, { yAxis = "left" }],
+            ["CWAgent", "cpu_usage_user", "InstanceId", aws_instance.monitoring_lab.id, { yAxis = "left" }],
+            ["CWAgent", "cpu_usage_system", "InstanceId", aws_instance.monitoring_lab.id, { yAxis = "left" }],
+            ["CWAgent", "cpu_usage_iowait", "InstanceId", aws_instance.monitoring_lab.id, { yAxis = "left" }],
+          ]
+        }
+      },
+
+      # ── Memory widget ──
+      {
+        type   = "metric"
+        x      = 0
+        y      = 6
+        width  = 12
+        height = 6
+        properties = {
+          title   = "CWAgent — Memory Used %"
+          region  = var.aws_region
+          view    = "timeSeries"
+          stacked = false
+          period  = 300
+          stat    = "Average"
+          metrics = [
+            ["CWAgent", "mem_used_percent", "InstanceId", aws_instance.monitoring_lab.id]
+          ]
+        }
+      },
+
+      # ── Disk widget ──
+      {
+        type   = "metric"
+        x      = 12
+        y      = 6
+        width  = 12
+        height = 6
+        properties = {
+          title   = "CWAgent — Disk Used %"
+          region  = var.aws_region
+          view    = "timeSeries"
+          stacked = false
+          period  = 300
+          stat    = "Average"
+          metrics = [
+            ["CWAgent", "disk_used_percent", "InstanceId", aws_instance.monitoring_lab.id, { yAxis = "left" }]
+          ]
+        }
+      },
+
+      # ── Alarm status widget ──
+      {
+        type   = "alarm"
+        x      = 0
+        y      = 12
+        width  = 24
+        height = 6
+        properties = {
+          title  = "CPU Alarm Status"
+          alarms = [aws_cloudwatch_metric_alarm.high_cpu.arn]
+        }
+      }
+    ]
+  })
+}
+
