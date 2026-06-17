@@ -1,0 +1,105 @@
+# ESO — External Secrets Operator Manifests
+# Cấu hình kết nối tới AWS Secrets Manager và đồng bộ secret vào K8s
+
+# ---------- SecretStore: Kết nối tới AWS Secrets Manager ----------
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: aws-secrets-store
+  namespace: w10-demo
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: ap-southeast-1
+      # Sử dụng IRSA (IAM Roles for Service Accounts) để xác thực
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: eso-sa
+---
+# ---------- ExternalSecret: Định nghĩa secret cần kéo về với refreshInterval < 60s ----------
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: db-credentials
+  namespace: w10-demo
+spec:
+  refreshInterval: "45s"  # < 60s như yêu cầu W10
+  secretStoreRef:
+    name: aws-secrets-store
+    kind: SecretStore
+  target:
+    name: db-credentials       # Tên K8s Secret sẽ được tạo
+    creationPolicy: Owner       # ESO sẽ tự tạo và quản lý secret
+  data:
+    - secretKey: DB_USERNAME    # Key trong K8s Secret
+      remoteRef:
+        key: /w10-demo/db/credentials  # Path trong AWS Secrets Manager
+        property: username
+    - secretKey: DB_PASSWORD
+      remoteRef:
+        key: /w10-demo/db/credentials
+        property: password
+    - secretKey: DB_HOST
+      remoteRef:
+        key: /w10-demo/db/credentials
+        property: host
+    - secretKey: DB_PORT
+      remoteRef:
+        key: /w10-demo/db/credentials
+        property: port
+---
+# ---------- Deployment dùng secret từ ESO, reload tự động bằng annotation ----------
+# App sẽ read secret từ volume mount và reload khi file thay đổi
+# (không cần restart pod — thoả mãn điều kiện "no-restart")
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-with-eso
+  namespace: w10-demo
+  annotations:
+    secret.reloader.stakater.com/reload: "db-credentials"   # Reloader tự động restart khi secret thay đổi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-with-eso
+  template:
+    metadata:
+      labels:
+        app: app-with-eso
+    spec:
+      serviceAccountName: eso-sa
+      containers:
+        - name: app
+          image: nginx:1.27-alpine
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: DB_PASSWORD
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: DB_PORT
+          volumeMounts:
+            - name: db-secret
+              mountPath: /etc/db
+              readOnly: true
+      volumes:
+        - name: db-secret
+          secret:
+            secretName: db-credentials

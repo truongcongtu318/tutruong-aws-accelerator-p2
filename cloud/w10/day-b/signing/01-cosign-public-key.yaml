@@ -1,0 +1,29 @@
+# Cấu hình Cosign — ký xác nhận image
+# Hướng dẫn:
+
+# 1. Tạo cặp khóa Cosign
+#    cosign generate-key-pair
+#    → Tạo ra 2 file: cosign.key (private) và cosign.pub (public)
+
+# 2. Lưu private key vào Github Actions Secret
+#    → COSIGN_PRIVATE_KEY (file content)
+#    → COSIGN_PASSWORD
+
+# 3. Dùng workflow bên dưới để sign image
+
+# File này chứa public key để verify trên K8s cluster
+# Khi apply, Kyverno hoặc Gatekeeper dùng public key này
+# để xác thực chữ ký của image trước khi cho phép deploy
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cosign-public-key
+  namespace: w10-demo
+data:
+  cosign.pub: |
+    -----BEGIN PUBLIC KEY-----
+    # Thay bằng public key thực tế khi generate
+    # Mẫu minh hoạ, không phải key thật
+    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE...
+    -----END PUBLIC KEY-----

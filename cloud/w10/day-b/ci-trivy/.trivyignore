@@ -1,0 +1,8 @@
+# Trivy Ignore File
+# Sử dụng để tạm thời bỏ qua các CVE không ảnh hưởng hoặc chưa có bản vá
+# Format: CVE-ID [optional: comment]
+# Expiration: mỗi mục cần được review lại theo chính sách exception
+
+# Ví dụ:
+CVE-2025-12345 # Non-exploitable in our setup. Expires: 2026-07-01
+CVE-2025-23456 # Dev dependency only. Expires: 2026-07-15
