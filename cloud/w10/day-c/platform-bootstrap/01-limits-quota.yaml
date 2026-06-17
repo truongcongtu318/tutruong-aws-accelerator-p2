@@ -1,0 +1,38 @@
+# ---------- LimitRange: default và constraint cho mỗi container trong namespace w10-demo ----------
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: demo-limits
+  namespace: w10-demo
+spec:
+  limits:
+    - default: # Mặc định gán limit nếu dev không khai báo
+        cpu: "500m"
+        memory: "512Mi"
+      defaultRequest: # Mặc định gán request nếu dev không khai báo
+        cpu: "200m"
+        memory: "256Mi"
+      max: # Mức trần cao nhất container có thể request/limit
+        cpu: "1000m"
+        memory: "1Gi"
+      min: # Mức sàn thấp nhất
+        cpu: "50m"
+        memory: "64Mi"
+      type: Container
+---
+# ---------- ResourceQuota: Tổng tài nguyên tối đa được sử dụng trong namespace ----------
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: demo-quota
+  namespace: w10-demo
+spec:
+  hard:
+    pods: "10" # Số lượng pod tối đa
+    requests.cpu: "2000m" # Tổng CPU request tối đa
+    requests.memory: "2Gi" # Tổng memory request tối đa
+    limits.cpu: "4000m" # Tổng CPU limit tối đa
+    limits.memory: "4Gi" # Tổng memory limit tối đa
+    services: "5" # Số lượng service tối đa
+    secrets: "15" # Số lượng secret tối đa
+    configmaps: "15" # Số lượng configmap tối đa
