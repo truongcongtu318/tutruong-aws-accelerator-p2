@@ -1,0 +1,30 @@
+# Native ValidatingAdmissionPolicy (K8s 1.30+) — CEL-based
+# Giới hạn replicas tối đa của Deployment được deploy vào namespace "w10-demo" là 10
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: limit-deployment-replicas
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["deployments"]
+  variables:
+    - name: namespace
+      expression: "object.metadata.namespace"
+  validations:
+    - expression: "object.spec.replicas <= 10"
+      message: "Deployment replicas must not exceed 10"
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: limit-deployment-replicas-binding
+spec:
+  policyName: limit-deployment-replicas
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        environment: production

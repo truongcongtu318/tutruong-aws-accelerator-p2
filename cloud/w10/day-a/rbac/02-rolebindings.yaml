@@ -1,0 +1,45 @@
+# ---------- RoleBinding cho từng ServiceAccount ----------
+# Gán ClusterRole "viewer" cho viewer-sa trong namespace w10-demo
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: viewer-binding
+  namespace: w10-demo
+subjects:
+  - kind: ServiceAccount
+    name: viewer-sa
+    namespace: w10-demo
+roleRef:
+  kind: ClusterRole
+  name: viewer
+  apiGroup: rbac.authorization.k8s.io
+---
+# Gán ClusterRole "developer" cho developer-sa
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developer-binding
+  namespace: w10-demo
+subjects:
+  - kind: ServiceAccount
+    name: developer-sa
+    namespace: w10-demo
+roleRef:
+  kind: ClusterRole
+  name: developer
+  apiGroup: rbac.authorization.k8s.io
+---
+# Gán ClusterRole "sre" cho sre-sa
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sre-binding
+  namespace: w10-demo
+subjects:
+  - kind: ServiceAccount
+    name: sre-sa
+    namespace: w10-demo
+roleRef:
+  kind: ClusterRole
+  name: sre
+  apiGroup: rbac.authorization.k8s.io

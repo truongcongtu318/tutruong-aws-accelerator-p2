@@ -1,0 +1,14 @@
+# Constraint: Cấm chạy privileged container trên tất cả các namespace
+# (trừ các image thuộc kube-system như coredns, kube-proxy,...)
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sContainerLimits
+metadata:
+  name: no-privileged-containers
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    excludedNamespaces: ["kube-system"]
+  parameters:
+    exemptImages: []

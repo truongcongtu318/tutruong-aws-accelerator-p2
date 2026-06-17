@@ -1,0 +1,56 @@
+# ConstraintTemplate: K8sContainerLimits (Hardening 1)
+# Không cho phép chạy container với privileged mode (securityContext.privileged = true)
+# và bắt buộc drop ALL capabilities
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8scontainerlimits
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sContainerLimits
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            exemptImages:
+              type: array
+              items:
+                type: string
+              description: Danh sách image được miễn trừ (có dạng 'registry/*')
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8scontainerlimits
+
+        # Kiểm tra container có bị tắt privilege mode không
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          container.securityContext.privileged == true
+          not is_exempt(container.image)
+          msg := sprintf("privileged_container_not_allowed; container <%v> in pod <%v> is running as privileged", [container.name, input.review.object.metadata.name])
+        }
+
+        # Kiểm tra container có chạy với runAsUser = 0 (root) không
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          container.securityContext.runAsNonRoot == false
+          not is_exempt(container.image)
+          msg := sprintf("run_as_root_not_allowed; container <%v> in pod <%v> must set securityContext.runAsNonRoot=true", [container.name, input.review.object.metadata.name])
+        }
+
+        # Nếu không khai báo securityContext.runAsNonRoot thì cũng coi là vi phạm
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          not container.securityContext.runAsNonRoot
+          not is_exempt(container.image)
+          msg := sprintf("run_as_root_not_set; container <%v> in pod <%v> must explicitly set securityContext.runAsNonRoot=true", [container.name, input.review.object.metadata.name])
+        }
+
+        # Hàm kiểm tra image miễn trừ
+        is_exempt(image) {
+          exemptImages := input.parameters.exemptImages
+          img := exemptImages[_]
+          glob.match(img, ["/"], image)
+        }

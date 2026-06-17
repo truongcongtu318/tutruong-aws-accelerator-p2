@@ -1,0 +1,52 @@
+# ConstraintTemplate: K8sRequiredLabels
+# Yêu cầu tất cả Namespace phải có các label bắt buộc (ví dụ: team, environment)
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8srequiredlabels
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRequiredLabels
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            labels:
+              type: array
+              description: Danh sách label yêu cầu phải có
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  allowedRegex:
+                    type: string
+                    description: Regex để kiểm tra giá trị của label
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8srequiredlabels
+
+        # Lấy danh sách label bắt buộc từ constraint
+        required_labels := input.parameters.labels
+
+        # Đọc review object (resource đang được tạo/sửa)
+        review_labels := input.review.object.metadata.labels
+
+        # Kiểm tra vi phạm: label bắt buộc không tồn tại
+        violation[{"msg": msg}] {
+          label := required_labels[_]
+          missing := not review_labels
+          msg := sprintf("missing_labels; object <name: %v> does not have required label <%v>", [input.review.object.metadata.name, label.key])
+        }
+
+        # Kiểm tra vi phạm: label tồn tại nhưng giá trị không khớp với regex (nếu có allowedRegex)
+        violation[{"msg": msg}] {
+          label := required_labels[_]
+          review_labels[label.key]
+          label.allowedRegex
+          not re_match(label.allowedRegex, review_labels[label.key])
+          msg := sprintf("invalid_label_value; object <name: %v> label <%v> has value <%v> which does not match regex <%v>", [input.review.object.metadata.name, label.key, review_labels[label.key], label.allowedRegex])
+        }

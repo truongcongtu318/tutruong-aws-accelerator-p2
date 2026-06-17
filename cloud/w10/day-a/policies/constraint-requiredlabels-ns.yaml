@@ -1,0 +1,16 @@
+# Constraint: yêu cầu Namespace "w10-demo" có labels "team" và "environment"
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: ns-must-have-team-and-env
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Namespace"]
+  parameters:
+    labels:
+      - key: team
+        allowedRegex: "^[a-z]+$"
+      - key: environment
+        allowedRegex: "^(production|staging|development)$"

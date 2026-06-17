@@ -1,0 +1,27 @@
+# RBAC Manifests cho cluster với 3 role: developer / sre / viewer
+# Mục tiêu: Cluster có 3 role rõ ràng như yêu cầu cuối W10
+
+# ---------- Namespace cho demo (tách biệt với argocd và các system namespace) ----------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: w10-demo
+---
+# ---------- ServiceAccount mẫu cho các nhóm ----------
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: developer-sa
+  namespace: w10-demo
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sre-sa
+  namespace: w10-demo
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: viewer-sa
+  namespace: w10-demo
