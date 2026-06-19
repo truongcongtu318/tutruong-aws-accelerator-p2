@@ -1,0 +1,6 @@
+Hello World!
+This is a standard text file containing no sensitive information.
+Everything in this file is public knowledge and is completely safe to store.
+This lab is for security and operational testing of Amazon Macie.
+No personal identification information (PII) is included here.
+Enjoy the AWS security workshop!

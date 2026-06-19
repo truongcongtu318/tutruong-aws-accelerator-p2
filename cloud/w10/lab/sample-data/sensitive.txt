@@ -1,0 +1,31 @@
+CONFIDENTIAL AWS SECURITY TESTING DATA
+DO NOT SHARE OUTSIDE AUTHORIZED LAB WORKSPACE
+
+This file contains mock sensitive data generated for verifying Amazon Macie classification.
+
+1. Mock Financial Information:
+-----------------------------
+Customer Account: John Doe
+Credit Card Number (Visa): 4111 1111 1111 1111
+Credit Card Expiry: 12/28
+CVV: 321
+Bank Balance: $1,250.00
+Cardholder Name: JOHN SMITH
+
+2. Mock Personal Identification Information (PII):
+-------------------------------------------------
+Full Name: Jane Elizabeth Doe
+Date of Birth: November 15, 1985
+Social Security Number (SSN): 999-28-3829
+Phone Number: +1-555-019-2831
+Email Address: jane.doe.testing@example.org
+Home Address: 742 Evergreen Terrace, Springfield, OR 97477
+
+3. Mock Credentials / Secrets:
+-----------------------------
+AWS Access Key ID: AKIAIMNOUT75MEIGXUBA
+AWS Secret Access Key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY
+Database Connection String: postgres://db_admin:P@ssw0rd123!@production-db.internal:5432/user_db
+GitHub Token: ghp_abc123XYZtesttokenforsecurityclassificationmacie
+
+END OF SAMPLE DATA
